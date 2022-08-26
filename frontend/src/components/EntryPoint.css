@@ -1,0 +1,14 @@
+
+.entry-point {
+  text-align: center;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  transform: translate(0, -50%);
+}
+
+
+.entry-point h1 {
+  color: white;
+}

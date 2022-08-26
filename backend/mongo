@@ -1,0 +1,2 @@
+docker run -p 27017:27017 mongo
+db.coll.findAndModify({id : "doc1", status : "pending"},{$set : { status : "processing"}});

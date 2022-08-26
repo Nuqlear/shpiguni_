@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@thream/socketio-jwt": "^3.0.0"
+  }
+}

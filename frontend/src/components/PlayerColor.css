@@ -1,0 +1,10 @@
+.player-color {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: white;
+
+  padding: 2px;
+  margin: 2px;
+}

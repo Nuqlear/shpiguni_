@@ -1,0 +1,31 @@
+body {
+  background-color: rgb(54, 54, 54);
+}
+
+.team--1 {
+  background-color: rgb(52 52 52);
+  color: rgb(226, 226, 226) !important;
+}
+
+.team-0 {
+  background-color: rgb(226, 226, 226);
+}
+
+.team-1 {
+  background-color: rgb(252, 107, 107);
+}
+
+.team-2 {
+  background-color: rgb(107, 170, 252);
+}
+
+.unselectable {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+.button:hover {
+  cursor: pointer;
+}
