@@ -11,8 +11,8 @@ import { useState, useEffect } from 'react';
 import { SocketService } from '../services/socketService';
 
 
-const filterByTeam = (team: number) => {
-    const lambda = (item: any) => { return (item.team == team) };
+const filterByTeam = (teamId: string) => {
+    const lambda = (item: any) => { return (item.teamId == teamId) };
     return lambda;
 }
 

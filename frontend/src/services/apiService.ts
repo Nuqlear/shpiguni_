@@ -13,12 +13,12 @@ export interface IUserRegisterData {
 
 export interface ILobbyWordData {
     text: string,
-    team: number,
+    teamId: string,
 }
 
 export interface ILobbyPlayerData {
     id: string,
-    team: number,
+    teamId: string,
     username: string,
     guess: string | null,
     color: string,

@@ -9,4 +9,3 @@ export async function connect() {
     await client.connect();
     conn = client.db(config.MONGO_DBNAME);
 }
-

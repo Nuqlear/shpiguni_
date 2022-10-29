@@ -26,13 +26,13 @@ socketListeners(io);
 
 
 connect().then(() => {
-    // insertWords().then(() => {
-    //     server.listen(config.PORT, () => {
-    //         console.log(`listening on *:${config.PORT}`);
-    //     });
-    // })
-    server.listen(config.PORT, () => {
-        console.log(`listening on *:${config.PORT}`);
-    });
+    insertWords().then(() => {
+        server.listen(config.PORT, () => {
+            console.log(`listening on *:${config.PORT}`);
+        });
+    })
+    // server.listen(config.PORT, () => {
+    //     console.log(`listening on *:${config.PORT}`);
+    // });
 })
 

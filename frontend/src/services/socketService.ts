@@ -37,7 +37,7 @@ export class SocketService {
         user: IUserData,
         lobbyId: string,
         matchId: string,
-        team: number,
+        teamId: string,
         isSpyMaster: boolean,
     ) {
         console.log("emit joinTeam");
@@ -46,7 +46,7 @@ export class SocketService {
             user,
             lobbyId,
             matchId,
-            team,
+            teamId,
             isSpyMaster,
         )
     }

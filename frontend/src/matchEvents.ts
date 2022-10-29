@@ -27,8 +27,8 @@ export interface IWordSelectedMatchEvent extends IMatchEvent {
     type: "word_selected",
     data: {
         word: string,
-        wordTeam: number,
-        selectedByTeam: number,
+        wordTeamId: string,
+        selectedByTeamId: string,
     }
 }
 
@@ -36,7 +36,7 @@ export interface IPlayerJoinedMatchEvent extends IMatchEvent {
     type: "player_joined",
     data: {
         playerId: string,
-        team: number,
+        teamId: string,
         isSpyMaster: boolean,
     }
 }
@@ -46,7 +46,7 @@ export function getWords(curWords: IWord[], events: IMatchEvent[]) {
     curWords.map(w => {
         words.set(w.text, {
             text: w.text,
-            team: w.team,
+            teamId: w.teamId,
             isActive: true,
         })
     })
@@ -57,10 +57,9 @@ export function getWords(curWords: IWord[], events: IMatchEvent[]) {
                 return
             }
             word.isActive = false;
-            word.team = event.data.wordTeam;
+            word.teamId = event.data.wordTeamId;
             words.set(event.data.word, word);
         }
     });
     return Array.from(words.values());
 }
-

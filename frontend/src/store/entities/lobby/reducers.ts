@@ -94,7 +94,7 @@ const lobbyReducer = createReducer(
             const words = action.payload.match.words.map((w) => {
                 return {
                     text: w.text,
-                    team: w.team,
+                    teamId: w.teamId,
                     isActive: true,
                 }
             })
@@ -117,11 +117,11 @@ function handlePlayerJoined(state: WritableDraft<LobbyState>, event: IMatchEvent
     state.players.list = state.players.list.filter(
         item => item.id != event.data.playerId
     )
-    if (event.data.team > 0) {
+    if (!["-1", "0"].includes(event.data.teamId)) {
         state.players.list.push(
             {
                 id: event.data.playerId,
-                team: event.data.team,
+                teamId: event.data.teamId,
                 guess: null,
                 isSpyMaster: event.data.isSpyMaster,
                 color: event.data.color,
@@ -135,7 +135,7 @@ function handleWordsSync(state: WritableDraft<LobbyState>, event: IMatchEvent) {
     state.words.list = event.data.words.map((w: IWord) => {
         return {
             text: w.text,
-            team: w.team,
+            teamId: w.teamId,
             isActive: true,
         }
     });

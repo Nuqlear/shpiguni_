@@ -1,21 +1,26 @@
 export interface IWord {
     text: string,
-    team: number,
+    teamId: string,
     isActive: boolean
 };
+
+export interface ITeam {
+    id: string,
+    color: string,
+    wordsNumber: number,
+}
 
 export interface ISettings {
     secondsPerRound: number,
     bonusSecondsPerWord: number,
-    team1words: number,
-    team2words: number,
-    team0words: number,
-    loseWordEnabled: boolean,
+    teams: ITeam[],
+    neutralWordsNumber: number,
+    loseWordsNumber: number,
 }
 
 export interface IPlayer {
     id: string,
-    team: number,
+    teamId: string,
     username: string,
     guess: string | null,
     color: string,
@@ -30,7 +35,7 @@ export interface ILobby {
 }
 
 export interface IClue {
-    team: number,
+    teamId: string,
     text: string
 }
 
@@ -61,8 +66,8 @@ export interface IWordSelectedMatchEvent extends IMatchEvent {
     type: "word_selected",
     data: {
         word: string,
-        wordTeam: number,
-        selectedByTeam: number,
+        wordTeamId: string,
+        selectedByTeamId: string,
     }
 }
 
@@ -77,7 +82,7 @@ export interface IPlayerJoinedMatchEvent extends IMatchEvent {
     type: "player_joined",
     data: {
         playerId: string,
-        team: number,
+        teamId: string,
         isSpyMaster: boolean,
     }
 }

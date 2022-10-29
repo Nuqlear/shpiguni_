@@ -2,15 +2,10 @@ import uuid4 from "uuid4";
 
 import { getRandomWords } from "./db/word";
 import { shuffleArray } from "./utils";
-import { IPlayerJoinedMatchEvent, ISettings, IWordsSyncEvent } from "./db/lobby";
+import { IPlayerJoinedMatchEvent, ISettings, ITeam, IWordsSyncEvent } from "./db/lobby";
 import { insertLobby, getLobbyData, IMatchWord, getMatchEvents, insertMatch, getMatchData, IMatch, insertMatchEvent } from "./db/lobby";
 import { User } from "./db/user";
-import {
-    TEAM_WORD_EMPTY,
-    TEAM_WORD_1,
-    TEAM_WORD_2,
-    TEAM_WORD_LOSE ,
-} from "./constants";
+import { TEAM_WORD_EMPTY, TEAM_WORD_LOSE } from "./constants";
 
 
 function setWordsTeam(
@@ -18,17 +13,24 @@ function setWordsTeam(
     settings: ISettings
 ) {
     const updated = words.map((word, index) => {
-        const offset = settings.loseWordEnabled ? 1 : 0;
-        let team = TEAM_WORD_EMPTY;
-        if (index  == 0 && settings.loseWordEnabled) {
-            team = TEAM_WORD_LOSE;
-        } else if (index < (settings.team1words + offset)) {
-            team = TEAM_WORD_1;
-        } else if (index < (settings.team1words + offset + settings.team2words)) {
-            team = TEAM_WORD_2;
+        const loseOffset = settings.loseWordsNumber;
+        const emptyOffset = (loseOffset + settings.neutralWordsNumber);
+        let teamId = null;
+        if (index < loseOffset) {
+            teamId = TEAM_WORD_LOSE;
+        } else if (index < emptyOffset) {
+            teamId = TEAM_WORD_EMPTY;
+        } else {
+            let curIdx = emptyOffset;
+            settings.teams.forEach((teamSettings) => {
+                if (index < curIdx + teamSettings.wordsNumber) {
+                    teamId = teamSettings.id
+                }
+                curIdx += teamSettings.wordsNumber;
+            });
         }
         return {
-            "team": team,
+            "teamId": teamId,
             "text": word.text,
         }
     });
@@ -40,26 +42,21 @@ export async function createLobby(hostUserId: string, settings: ISettings) {
     const id = uuid4().replace(/-/g, '') as string;
     const matchId = uuid4().replace(/-/g, '') as string;
     const total_words = (
-        settings.team1words +
-        settings.team2words +
-        settings.team0words +
-        (settings.loseWordEnabled ? 1 : 0)
+        settings.teams.reduce((sum: number, team: ITeam) => sum + team.wordsNumber, 0) +
+        settings.neutralWordsNumber +
+        settings.loseWordsNumber
     );
     const words = await getRandomWords(total_words);
     let MatchWords = setWordsTeam(words, settings);
     const lobbyData = {
         id: id,
         currentMatchId: matchId,
-        secondsPerRound: 90,
-        bonusSecondsPerWord: 10,
         hostUserId: hostUserId,
         settings: settings,
         createdAt: new Date(),
     }
     let matchData = {
         id: matchId,
-        secondsPerRound: lobbyData.secondsPerRound,
-        bonusSecondsPerWord: lobbyData.bonusSecondsPerWord,
         lobbyId: id,
         words: MatchWords,
         settings: settings,
@@ -69,7 +66,7 @@ export async function createLobby(hostUserId: string, settings: ISettings) {
     }
     await insertLobby(lobbyData);
     await insertMatch(matchData);
-    matchData.words.map((w) => w.team = 0);
+    matchData.words.map((w) => w.teamId = 0);
     const result = {
         lobby: lobbyData,
         match: {
@@ -86,7 +83,7 @@ export async function getLobby(userId: string, lobbyId: string) {
     let matchData = await getMatchData(lobbyData.currentMatchId);
     let isSpyMaster = getUserIsSpyMaster(userId, matchData).isSpyMaster;
     if (!isSpyMaster) {
-        matchData.words.map((w) => w.team = 0);
+        matchData.words.map((w) => w.teamId = 0);
     }
     return {
         lobby: lobbyData,
@@ -99,16 +96,16 @@ export async function getLobby(userId: string, lobbyId: string) {
 
 export function getUserIsSpyMaster(userId: string, matchData: IMatch) {
     let isSpyMaster = false;
-    let team = null;
+    let teamId = null;
     matchData.players.map((p) => {
         if (p.id == userId && p.isSpyMaster) {
             isSpyMaster = true;
-            team = p.team;
+            teamId = p.teamId;
         }
     });
     return {
         isSpyMaster: isSpyMaster,
-        team: team,
+        teamId: teamId,
     }
 }
 
@@ -116,7 +113,7 @@ export async function createPlayerJoinedEvent(
     user: User,
     lobbyId: string,
     matchId: string,
-    team: number,
+    teamId: string,
     isSpyMaster: boolean,
 ) {
     console.log("createPlayerJoinedEvent");
@@ -129,7 +126,7 @@ export async function createPlayerJoinedEvent(
             playerId: user.id,
             color: user.color,
             username: user.username,
-            team: team,
+            teamId: teamId,
             isSpyMaster: isSpyMaster,
         }
     } as IPlayerJoinedMatchEvent;
@@ -144,7 +141,7 @@ export async function createWordsSyncEvent(
     console.log("createWordsSyncEvent");
     let words = matchData.words;
     if (isSpyMaster == false) {
-        words.map((w) => w.team = 0);
+        words.map((w) => w.teamId = 0);
     }
     const event = {
         timestamp: new Date(),

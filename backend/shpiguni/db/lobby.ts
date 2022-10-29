@@ -5,13 +5,18 @@ const lobbyTableName = "sh_lobby";
 const matchTableName = "sh_match";
 const matchEventTableName = "sh_match_event";
 
+export interface ITeam {
+    id: string,
+    color: string,
+    wordsNumber: number,
+}
+
 export interface ISettings {
     secondsPerRound: number,
     bonusSecondsPerWord: number,
-    team1words: number,
-    team2words: number,
-    team0words: number,
-    loseWordEnabled: boolean,
+    teams: ITeam[],
+    neutralWordsNumber: number,
+    loseWordsNumber: number,
 }
 
 export interface IMatchEvent {
@@ -41,8 +46,8 @@ export interface IWordSelectedMatchEvent extends IMatchEvent {
     type: "word_selected",
     data: {
         word: string,
-        wordTeam: number,
-        selectedByTeam: number,
+        wordTeamId: string,
+        selectedByTeamId: string,
     }
 }
 
@@ -59,19 +64,19 @@ export interface IPlayerJoinedMatchEvent extends IMatchEvent {
         playerId: string,
         username: string,
         color: string,
-        team: number,
+        teamId: string,
         isSpyMaster: boolean,
     }
 }
 
 export interface IMatchWord {
     text: string,
-    team: number,
+    teamId: string,
 }
 
 export interface IPlayer {
     id: string,
-    team: number,
+    teamId: string,
     guess: string | null,
     isSpyMaster: boolean
 }
@@ -92,7 +97,6 @@ export interface IMatch {
     endedAt: Date | null,
     words: IMatchWord[],
     players: IPlayer[],
-    events?: IMatchEvent[]
 }
 
 export async function insertLobby(lobbyData: ILobbyData) {

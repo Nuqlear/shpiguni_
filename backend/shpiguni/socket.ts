@@ -28,7 +28,7 @@ const socketListeners = (io: any) => {
             user: User,
             lobbyId: string,
             matchId: string,
-            team: number,
+            teamId: string,
             isSpyMaster: boolean,
         ) => {
             console.log("got joinTeam event");
@@ -36,7 +36,7 @@ const socketListeners = (io: any) => {
                 user,
                 lobbyId,
                 matchId,
-                team,
+                teamId,
                 isSpyMaster,
             );
             socket.data.lobbyId = lobbyId;
@@ -61,7 +61,7 @@ const socketListeners = (io: any) => {
                 },
                 socket.data.lobbyId,
                 socket.data.matchId,
-                -1,
+                "-1",
                 false,
             );
             io.to(`lobbies/${socket.data.lobbyId}`).emit("lobbyMatchEvent", event);
